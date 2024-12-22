@@ -15,11 +15,11 @@ setup(
     keywords=['pixoo', 'divoom', 'pixoo64', 'pixoo16'],
     long_description=(Path(__file__).parent / "README.md").read_text(),
     long_description_content_type='text/markdown',
-    url='https://github.com/SomethingWithComputers/pixoo#readme',
+    url='https://github.com/TheSecondLugia/pixoo-next',
     # packages=['pixoo'],
     project_urls={
-        'Issue Tracker': 'https://github.com/SomethingWithComputers/pixoo/issues',
-        'Source': 'https://github.com/SomethingWithComputers/pixoo'
+        'Issue Tracker': 'https://github.com/TheSecondLugia/pixoo-next/issues',
+        'Source': 'https://github.com/TheSecondLugia/pixoo-next'
     },
     install_requires=[
         'Flask ~= 3.0.3',
