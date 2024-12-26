@@ -6,9 +6,8 @@ from PIL import Image, ImageOps
 
 from .simulator import Simulator
 from .. import Palette, SimulatorConfiguration, ImageResampleMode, TextScrollDirection
-from ..constants.font import retrieve_glyph
 from ..utilities import minimum_amount_of_steps, round_location, lerp_location, clamp_color, rgb_to_hex_color, clamp
-
+from ..constants.font import Font
 
 class Pixoo:
     __buffer = []
@@ -66,18 +65,23 @@ class Pixoo:
     def clear_rgb(self, r, g, b):
         self.fill_rgb(r, g, b)
 
-    def draw_character(self, character, xy=(0, 0), rgb=Palette.WHITE):
-        matrix = retrieve_glyph(character)
+    def draw_character(self, character, xy=(0, 0), rgb=Palette.WHITE, font=None):
+        if font is None:
+            font = Font.FONT_TOM_THUMB
+        matrix = Font.retrieve_glyph(character, font)
         if matrix is not None:
+            teller = matrix[-1]
+            if teller == 0:
+                teller = 1
             for index, bit in enumerate(matrix):
                 if bit == 1:
-                    local_x = index % 3
-                    local_y = int(index / 3)
+                    local_x = index % teller
+                    local_y = int(index / teller)
                     self.draw_pixel((xy[0] + local_x, xy[1] + local_y), rgb)
 
     def draw_character_at_location_rgb(self, character, x=0, y=0, r=255, g=255,
-                                       b=255):
-        self.draw_character(character, (x, y), (r, g, b))
+                                       b=255, font=None):
+        self.draw_character(character, (x, y), (r, g, b), font)
 
     def draw_filled_rectangle(self, top_left_xy=(0, 0), bottom_right_xy=(1, 1),
                               rgb=Palette.BLACK):
@@ -201,12 +205,74 @@ class Pixoo:
     def draw_pixel_at_location_rgb(self, x, y, r, g, b):
         self.draw_pixel((x, y), (r, g, b))
 
-    def draw_text(self, text, xy=(0, 0), rgb=Palette.WHITE):
-        for index, character in enumerate(text):
-            self.draw_character(character, (index * 4 + xy[0], xy[1]), rgb)
 
-    def draw_text_at_location_rgb(self, text, x, y, r, g, b):
-        self.draw_text(text, (x, y), (r, g, b))
+    def draw_text(self, text, xy=(0, 0), rgb=Palette.WHITE, width=0, font=None, align='L'):
+        if font is None:
+            font = Font.FONT_TOM_THUMB
+        matrix = 0
+        if width > 0:
+            words = text.split(' ')  # Split the string into words
+            lines = []
+            current_line = []
+            current_width = 0
+
+            def get_word_pixel_length(word, font):
+                pixel_length = 0
+                for char in word:
+                    pixel_length += (Font.retrieve_glyph_leading(char, font) + 1)
+                return pixel_length
+            
+            def break_word(word, width, font):
+                chunk = []
+                chunk_width = 0
+
+                for char in word:
+                    char_width = Font.retrieve_glyph_leading(char, font) + 1
+                    if char_width + chunk_width <= width:
+                        chunk.append(char)
+                        chunk_width += char_width
+                    else:
+                        break
+
+                return ''.join(chunk), word[len(chunk):]
+
+            for word in words:
+                word_width = get_word_pixel_length(word, font)
+
+                if current_width + word_width <= width:
+                    current_line.append(word)
+                    current_width += word_width + get_word_pixel_length(" ", font)
+                else:
+                    if word_width > width:
+                        broken_word, remaining = break_word(word, width, font)
+                        current_line.append(broken_word)
+                        lines.append(' '.join(current_line))
+                        current_line = [remaining]
+                        current_width = get_word_pixel_length(remaining, font)
+                    else:
+                        lines.append(' '.join(current_line))
+                        current_line = [word]
+                        current_width = word_width + get_word_pixel_length(" ", font)
+
+            if current_line:
+                lines.append(' '.join(current_line))
+
+            new_y = xy[1]
+            for s in lines:
+                if align == 'R':
+                    self.draw_text(s, (width - (get_word_pixel_length(s, font)) + 1, new_y), rgb, 0, font)
+                elif align == 'C':
+                    self.draw_text(s, ((width // 2) - (get_word_pixel_length(s, font) // 2), new_y), rgb, 0, font)
+                else:
+                    self.draw_text(s, (xy[0], new_y), rgb, 0, font)
+                new_y += Font.retrieve_glyph_height(font)
+        else:
+            for index, character in enumerate(text):
+                self.draw_character(character, (matrix + xy[0], xy[1]), rgb, font)
+                matrix += Font.retrieve_glyph_leading(character, font) + 1
+
+    def draw_text_at_location_rgb(self, text, x, y, r, g, b, width=0, font=None, align='L'):
+        self.draw_text(text, (x, y), (r, g, b), width, font, align)
 
     def fill(self, rgb=Palette.BLACK):
         self.__buffer = []
@@ -376,6 +442,19 @@ class Pixoo:
                                   movement_speed=0,
                                   direction=TextScrollDirection.LEFT):
         self.send_text(text, (x, y), (r, g, b), identifier, font, width, movement_speed, direction)
+
+    def clear_text(self):
+        #This won't be possible
+        if self.simulated:
+            return
+        
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Draw/ClearHttpText'
+        }))
+
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
 
     def set_brightness(self, brightness):
         # This won't be possible
