@@ -2,7 +2,7 @@
 
 # Pixoo
 
-A library to easily communicate with the Divoom Pixoo 64 (and hopefully soon more screens that support Wi-Fi)
+A library to easily communicate with the Divoom Pixoo 64 (and hopefully soon more screens that support Wi-Fi) based on the work of [SomethingWithComputers](https://github.com/SomethingWithComputers/pixoo). All credit should go to them.
 
 An non-trivial example, with re-connecting and API-calls can be found in `examples/power-usage`.
 In this example I read the current kWh from my P1-meter and display the current power usage of my house in a neat little
