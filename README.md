@@ -159,6 +159,9 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
 !'()+,-<=>?[]^_:;./{|}~$@%
 ```
 
+### GICKO alternative font
+Special thanks goes to [gickowtf](https://github.com/gickowtf/pixoo) who added the GICKO alternative font and also contributed flexible spacing to display wider and narrower letters so that they do not necessarily have to be three pixels wide.
+
 ## Known bugs
 
 ### Simulator shows black screen on Macbook with M-processors
