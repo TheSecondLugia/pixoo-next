@@ -18,12 +18,16 @@ class Pixoo:
     __frames = []
     __item_buffer = []
 
-    def __init__(self, ip_address=None, size=64, model="PIXOO64", debug=False, anim_speed=500, refresh_connection_automatically=True,
+    def __init__(self, ip_address=None, size=64, model="PIXOO64", debug=False, refresh_connection_automatically=True,
                  simulated=False,
                  simulation_config=SimulatorConfiguration()):
         assert size in [16, 32, 64], \
             'Invalid screen size in pixels given. ' \
             'Valid options are 16, 32, and 64'
+
+        assert model in ["PIXOO", "PIXOO16", "PIXOO64", "TIMEGATE"], \
+            'Invalid model. Valid options are PIXOO, PIXOO16, PIXOO64, and TIMEGATE.' \
+            'If this is a new model, please contact the developer.'
 
         self.model = model
         self.simulated = simulated
@@ -40,9 +44,6 @@ class Pixoo:
 
         # Total number of pixels
         self.pixel_count = self.size * self.size
-
-        # Get animation info
-        self.anim_speed = anim_speed
 
         # Generate URL
         self.__url = 'http://{0}/post'.format(self.ip_address)
@@ -403,8 +404,8 @@ class Pixoo:
         if data['error_code'] != 0:
             self.__error(data)
 
-    def push(self, screen_num=0):
-        self.__send_buffer(screen_num)
+    def push(self, speed=500, screen_num=0):
+        self.__send_buffer(speed, screen_num)
 
     def save_frame(self):
         self.__frames.append(self.__buffer)
@@ -421,36 +422,39 @@ class Pixoo:
     def send_text(self, text, xy=(0, 0), color=Palette.WHITE, identifier=1,
                   font=2, width=64,
                   movement_speed=0,
-                  direction=TextScrollDirection.LEFT):
+                  direction=TextScrollDirection.LEFT, lcd_index=0):
 
         # This won't be possible
         if self.simulated:
             return
         
-        if self.model == "PIXOO64" or self.model == "TIMEGATE":
-            # Make sure the identifier is valid
-            identifier = clamp(identifier, 0, 19)
-
-            response = requests.post(self.__url, json.dumps({
-                'Command': 'Draw/SendHttpText',
-                'TextId': identifier,
-                'x': xy[0],
-                'y': xy[1],
-                'dir': direction,
-                'font': font,
-                'TextWidth': width,
-                'speed': movement_speed,
-                'TextString': text,
-                'color': rgb_to_hex_color(color)
-            }))
-
-            data = response.json()
-            if data['error_code'] != 0:
-                self.__error(data)
-        else:
+        if self.model == "PIXOO" or self.model == "PIXOO16":
             if self.debug:
                 print(f'[x] Command not supported for {self.model}')
             raise Exception(f"{self.model} does not currently support this feature.")
+
+        # Make sure the identifier is valid
+        identifier = clamp(identifier, 0, 19)
+        lcd_index = clamp(lcd_index, 0, 4)
+
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Draw/SendHttpText',
+            'LcdIndex': lcd_index,
+            'TextId': identifier,
+            'x': xy[0],
+            'y': xy[1],
+            'dir': direction,
+            'font': font,
+            'TextWidth': width,
+            'speed': movement_speed,
+            'TextString': text,
+            'color': rgb_to_hex_color(color)
+        }))
+
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+            
 
     def send_text_at_location_rgb(self, text, x=0, y=0, r=255, g=255, b=255, identifier=1, font=2, width=64,
                                   movement_speed=0,
@@ -493,13 +497,19 @@ class Pixoo:
             item_dict["TextString"] = text
         self.__item_buffer.append(item_dict)
 
-    def send_items(self):
+    def send_items(self, lcd_index=0):
         #This won't be possible
         if self.simulated:
             return
         
+        assert self.model in ["PIXOO64", "TIMEGATE"], \
+            'This model does not support this function.'
+
+        lcd_index = clamp(lcd_index, 0, 4)
         response = requests.post(self.__url, json.dumps({
             'Command': 'Draw/SendHttpItemList',
+            'LcdIndex': lcd_index,
+            'NewFlag': 1,
             'ItemList': self.__item_buffer
         }))
 
@@ -697,7 +707,7 @@ class Pixoo:
             if self.debug:
                 print('[.] Counter loaded and stored: ' + str(self.__counter))
 
-    def __send_buffer(self, screen_num=0):
+    def __send_buffer(self, speed=500, screen_num=0):
 
         # Save frame first
         self.save_frame()
@@ -715,7 +725,7 @@ class Pixoo:
 
         # If it's simulated, we don't need to actually push it to the divoom
         if self.simulated:
-            self.__simulator.display(self.__frames, self.__counter)
+            self.__simulator.display(self.__frames, speed, self.__counter)
 
             # Simulate this too I suppose
             self.__buffers_send = self.__buffers_send + 1
@@ -728,7 +738,6 @@ class Pixoo:
 
         # Encode the buffer to base64 encoding
         for k,v in enumerate(self.__frames):
-
             response = requests.post(self.__url, json.dumps({
                 'Command': 'Draw/SendHttpGif',
                 'LcdArray': lcd_array,
@@ -736,7 +745,7 @@ class Pixoo:
                 'PicWidth': self.size,
                 'PicOffset': k,
                 'PicID': self.__counter,
-                'PicSpeed': self.anim_speed,
+                'PicSpeed': speed,
                 'PicData': str(base64.b64encode(bytearray(v)).decode())
             }))
             data = response.json()

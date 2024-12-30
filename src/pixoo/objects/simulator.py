@@ -50,11 +50,11 @@ class Simulator:
         # Display the loading screen
         self.__root.update()
 
-    def display(self, frames, counter):
+    def display(self, frames, speed, counter):
         self.__frames.clear()
         for buffer in frames:
             self.__update_image(buffer)
-            sleep(self.__speed / 1000)
+            sleep(speed / 1000)
 
     def __update_image(self, data):
         # Convert our buffer to a nice image
