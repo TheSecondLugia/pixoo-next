@@ -516,8 +516,6 @@ class Pixoo:
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
-
-    def clear_items(self):
         self.__item_buffer.clear()
 
     def set_brightness(self, brightness):
