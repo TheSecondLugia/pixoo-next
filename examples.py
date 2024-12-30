@@ -88,7 +88,7 @@ pixoo.save_frame()
 '''
 The push methods saves the current frame and pushes the buffer to the screen, needs to be called after you're done with all drawing-type methods
 This method accepts one parameter: the speed parameter which indicates the time (in ms) to display each frame in the animation. Default is 500 ms.
-For TimeGate users, this method accepts another parameter: the lcd_index parameter that determines which one of the five lcds to send the item to (optional; default is 0; must be between 0 and 4)
+For TimeGate users, this method accepts another parameter: the lcd_index parameter that determines which one of the five lcds to send the item to (optional; default is 0 which is the far left screen; must be between 0 and 4)
 '''
 pixoo.push(500)
 
