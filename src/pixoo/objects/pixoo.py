@@ -15,14 +15,17 @@ class Pixoo:
     __counter = 0
     __refresh_counter_limit = 32
     __simulator = None
+    __frames = []
+    __item_buffer = []
 
-    def __init__(self, ip_address=None, size=64, debug=False, refresh_connection_automatically=True,
+    def __init__(self, ip_address=None, size=64, model="PIXOO64", debug=False, anim_speed=500, refresh_connection_automatically=True,
                  simulated=False,
                  simulation_config=SimulatorConfiguration()):
         assert size in [16, 32, 64], \
             'Invalid screen size in pixels given. ' \
             'Valid options are 16, 32, and 64'
 
+        self.model = model
         self.simulated = simulated
 
         # Attempt to load the IP if it's not
@@ -37,6 +40,9 @@ class Pixoo:
 
         # Total number of pixels
         self.pixel_count = self.size * self.size
+
+        # Get animation info
+        self.anim_speed = anim_speed
 
         # Generate URL
         self.__url = 'http://{0}/post'.format(self.ip_address)
@@ -397,8 +403,11 @@ class Pixoo:
         if data['error_code'] != 0:
             self.__error(data)
 
-    def push(self):
-        self.__send_buffer()
+    def push(self, screen_num=0):
+        self.__send_buffer(screen_num)
+
+    def save_frame(self):
+        self.__frames.append(self.__buffer)
 
     def reboot(self):
         response = requests.post(self.__url, json.dumps({
@@ -417,26 +426,31 @@ class Pixoo:
         # This won't be possible
         if self.simulated:
             return
+        
+        if self.model == "PIXOO64" or self.model == "TIMEGATE":
+            # Make sure the identifier is valid
+            identifier = clamp(identifier, 0, 19)
 
-        # Make sure the identifier is valid
-        identifier = clamp(identifier, 0, 19)
+            response = requests.post(self.__url, json.dumps({
+                'Command': 'Draw/SendHttpText',
+                'TextId': identifier,
+                'x': xy[0],
+                'y': xy[1],
+                'dir': direction,
+                'font': font,
+                'TextWidth': width,
+                'speed': movement_speed,
+                'TextString': text,
+                'color': rgb_to_hex_color(color)
+            }))
 
-        response = requests.post(self.__url, json.dumps({
-            'Command': 'Draw/SendHttpText',
-            'TextId': identifier,
-            'x': xy[0],
-            'y': xy[1],
-            'dir': direction,
-            'font': font,
-            'TextWidth': width,
-            'speed': movement_speed,
-            'TextString': text,
-            'color': rgb_to_hex_color(color)
-        }))
-
-        data = response.json()
-        if data['error_code'] != 0:
-            self.__error(data)
+            data = response.json()
+            if data['error_code'] != 0:
+                self.__error(data)
+        else:
+            if self.debug:
+                print(f'[x] Command not supported for {self.model}')
+            raise Exception(f"{self.model} does not currently support this feature.")
 
     def send_text_at_location_rgb(self, text, x=0, y=0, r=255, g=255, b=255, identifier=1, font=2, width=64,
                                   movement_speed=0,
@@ -455,6 +469,46 @@ class Pixoo:
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
+
+    def add_item(self, text_id=1, text=None, type=1, color=Palette.WHITE, xy=(0, 0), scroll=0, font=2, width=64, height=16, speed=100, update_time=None, align='L'):
+        item_dict = {
+            "TextId": text_id,
+            "type": type,
+            "x": xy[0],
+            "y": xy[1],
+            "dir": scroll,
+            "font": font,
+            "TextWidth": width,
+            "Textheight": height,
+            "speed": speed,
+            "color": rgb_to_hex_color(color)
+        }
+        if align == 'L':
+            item_dict["align"] = 1
+        elif align == 'C':
+            item_dict["align"] = 2
+        else:
+            item_dict["align"] = 3
+        if text is not None:
+            item_dict["TextString"] = text
+        self.__item_buffer.append(item_dict)
+
+    def send_items(self):
+        #This won't be possible
+        if self.simulated:
+            return
+        
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Draw/SendHttpItemList',
+            'ItemList': self.__item_buffer
+        }))
+
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+
+    def clear_items(self):
+        self.__item_buffer.clear()
 
     def set_brightness(self, brightness):
         # This won't be possible
@@ -643,7 +697,10 @@ class Pixoo:
             if self.debug:
                 print('[.] Counter loaded and stored: ' + str(self.__counter))
 
-    def __send_buffer(self):
+    def __send_buffer(self, screen_num=0):
+
+        # Save frame first
+        self.save_frame()
 
         # Add to the internal counter
         self.__counter = self.__counter + 1
@@ -658,30 +715,39 @@ class Pixoo:
 
         # If it's simulated, we don't need to actually push it to the divoom
         if self.simulated:
-            self.__simulator.display(self.__buffer, self.__counter)
+            self.__simulator.display(self.__frames, self.__counter)
 
             # Simulate this too I suppose
             self.__buffers_send = self.__buffers_send + 1
             return
 
-        # Encode the buffer to base64 encoding
-        response = requests.post(self.__url, json.dumps({
-            'Command': 'Draw/SendHttpGif',
-            'PicNum': 1,
-            'PicWidth': self.size,
-            'PicOffset': 0,
-            'PicID': self.__counter,
-            'PicSpeed': 1000,
-            'PicData': str(base64.b64encode(bytearray(self.__buffer)).decode())
-        }))
-        data = response.json()
-        if data['error_code'] != 0:
-            self.__error(data)
-        else:
-            self.__buffers_send = self.__buffers_send + 1
+        # TIMEGATE - Convert the provided screen_num into an LcdArray
+        screen_num = clamp(screen_num, 0, 4)
+        lcd_array = [0, 0, 0, 0, 0]
+        lcd_array[screen_num] = 1
 
-            if self.debug:
-                print(f'[.] Pushed {self.__buffers_send} buffers')
+        # Encode the buffer to base64 encoding
+        for k,v in enumerate(self.__frames):
+
+            response = requests.post(self.__url, json.dumps({
+                'Command': 'Draw/SendHttpGif',
+                'LcdArray': lcd_array,
+                'PicNum': len(self.__frames),
+                'PicWidth': self.size,
+                'PicOffset': k,
+                'PicID': self.__counter,
+                'PicSpeed': self.anim_speed,
+                'PicData': str(base64.b64encode(bytearray(v)).decode())
+            }))
+            data = response.json()
+            if data['error_code'] != 0:
+                self.__error(data)
+            else:
+                self.__buffers_send = self.__buffers_send + 1
+
+                if self.debug:
+                    print(f'[.] Pushed {self.__buffers_send} buffers')
+        self.__frames.clear()
 
     def __reset_counter(self):
         if self.debug:

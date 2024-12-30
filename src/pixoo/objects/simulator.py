@@ -4,6 +4,9 @@ from PIL import ImageTk, Image, ImageDraw
 
 from .. import Palette
 
+from time import sleep
+import itertools
+
 
 class Simulator:
     __config = None
@@ -16,14 +19,15 @@ class Simulator:
     def __init__(self, pixoo, config):
         self.__config = config
         scale = self.__config.scale
+        self.__speed = self.__config.speed
         self.__image_size = (pixoo.size * scale, pixoo.size * scale)
         self.__root = tkinter.Tk()
         self.__root.title('Pixoo Simulator')
         self.__root.geometry('{0}x{1}'.format(self.__image_size[0], self.__image_size[1]))
         self.__root.attributes('-topmost', True)
-
         self.__canvas = tkinter.Canvas(self.__root, height=self.__image_size[1], width=self.__image_size[0])
         self.__canvas.pack()
+        self.__frames = []
 
         # Scale it up to something useful
         image = Image.new('RGB', (pixoo.size, pixoo.size), color='red')
@@ -46,9 +50,15 @@ class Simulator:
         # Display the loading screen
         self.__root.update()
 
-    def display(self, buffer, counter):
+    def display(self, frames, counter):
+        self.__frames.clear()
+        for buffer in frames:
+            self.__update_image(buffer)
+            sleep(self.__speed / 1000)
+
+    def __update_image(self, data):
         # Convert our buffer to a nice image
-        image = Image.frombytes('RGB', self.__screen_size, bytes(buffer), 'raw')
+        image = Image.frombytes('RGB', self.__screen_size, bytes(data), 'raw')
 
         # Scale it up and convert it to something useful
         image = self.__prepare_image(image)
@@ -58,6 +68,8 @@ class Simulator:
 
         # Show it
         self.__root.update()
+
+
 
     def __prepare_image(self, image):
         image = image.resize(self.__image_size, Image.NEAREST)
