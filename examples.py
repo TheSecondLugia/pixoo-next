@@ -5,7 +5,7 @@ Create a connection to a Pixoo
 
 First argument is its IP address (required)
 The second argument is the display size (optional, default 64)
-The third argument is the model name for the display (optional, default "PIXOO64"). It currently supports four models (PIXOO64, PIXOO, PIXOO16, and TIMEGATE).
+The third argument is the model name for the display (optional, default "PIXOO64"). It currently supports four models ('PIXOO64', 'PIXOO', 'PIXOO16', and 'TIMEGATE').
 The fourth argument is the 'debug mode' (optional, default False), which enables logging of important actions
 '''
 pixoo = Pixoo('192.168.50.214', 64, "PIXOO64", True)
