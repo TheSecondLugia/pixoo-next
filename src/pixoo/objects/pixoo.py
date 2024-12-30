@@ -474,13 +474,13 @@ class Pixoo:
         if data['error_code'] != 0:
             self.__error(data)
 
-    def add_item(self, text=None, color=Palette.WHITE, xy=(0, 0), text_id=1, type=22, scroll=0, font=2, width=64, height=16, speed=100, update_time=None, align='L'):
+    def add_item(self, text=None, color=Palette.WHITE, xy=(0, 0), text_id=1, type=22, direction=TextScrollDirection.LEFT, font=2, width=64, height=16, speed=100, update_time=None, align='L'):
         item_dict = {
             "TextId": text_id,
             "type": type,
             "x": xy[0],
             "y": xy[1],
-            "dir": scroll,
+            "dir": direction,
             "font": font,
             "TextWidth": width,
             "Textheight": height,
