@@ -2,7 +2,7 @@
 
 # Pixoo_Next
 
-A library to easily communicate with the Divoom Pixoo 64 (and hopefully soon more screens that support Wi-Fi) based on the work of [SomethingWithComputers](https://github.com/SomethingWithComputers/pixoo). All credit should go to them.
+A library to easily communicate with the Divoom Pixoo64, Pixoo16, and Time Gate (and hopefully soon more screens that support Wi-Fi) based on the work of [SomethingWithComputers](https://github.com/SomethingWithComputers/pixoo). All credit should go to them.
 
 An non-trivial example, with re-connecting and API-calls can be found in `examples/power-usage`.
 In this example I read the current kWh from my P1-meter and display the current power usage of my house in a neat little
@@ -161,6 +161,9 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
 
 ### GICKO alternative font
 Special thanks goes to [gickowtf](https://github.com/gickowtf/pixoo) who added the GICKO alternative font and also contributed flexible spacing to display wider and narrower letters so that they do not necessarily have to be three pixels wide.
+
+### Tom Thumb font
+Special thanks goes to Brian Swetland and Robey Pointer for making a tiny 3x5 font that has high readability despite its scale. This font is used under the CC0 license.
 
 ## Known bugs
 
