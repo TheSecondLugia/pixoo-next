@@ -1,4 +1,4 @@
-from pixoo import Channel, ImageResampleMode, Pixoo
+from pixoo import Channel, ImageResampleMode, Pixoo, Font
 
 '''
 Create a connection to a Pixoo
@@ -7,9 +7,8 @@ First argument is its IP address (required)
 The second argument is the display size (optional, default 64)
 The third argument is the model name for the display (optional, default "PIXOO64"). It currently supports four models (PIXOO64, PIXOO, PIXOO16, and TIMEGATE).
 The fourth argument is the 'debug mode' (optional, default False), which enables logging of important actions
-The fifth argument is the speed of the GIF.
 '''
-pixoo = Pixoo('192.168.50.214', 64, "PIXOO64", True, 500)
+pixoo = Pixoo('192.168.50.214', 64, "PIXOO64", True)
 
 # The following are all 'drawing' methods.
 # Afterwards, be sure to call `pixoo.push()` to send the internal buffer to the connected display
@@ -42,21 +41,20 @@ pixoo.draw_pixel_at_index(127, (255, 255, 255))  # Set the pixel at (63, 1) to f
 pixoo.draw_pixel_at_index_rgb(127, 255, 255, 255)
 
 '''
-Draw a string of text at a given position with a given color using the PICO-8 font
-The font's glyphs are at a maximum 3 pixels wide and 5 pixels high. We're using 4 pixels per glyph for nicer kerning
-Supported characters so far are:
-```
-0123456789
-abcdefghijklmnopqrstuvwxyz
-ABCDEFGHIJKLMNOPQRSTUVWXYZ
-!'()+,-<=>?[]^_:;./{|}~$@%
-```
+Draw a string of text at a given position with a given color.
 This will draw text to the buffer (so call `push()`) and it's not the same as `send_text` (and therefore less buggy)
+
+First argument is the text string (required)
+Second argument is a xy position of the text (as a tuple; optional; default is (0, 0))
+Third argument is the RGB color of the text (as a tuple; optional; default is (255, 255, 255))
+Fourth argument is the width of the text box. The default is 0 which essentially means infinite width.
+Fifth argument is the font for the text (uses a Font class). The default is the Tom Thumb font.
+Sixth argument is the alignment of the text within the text box ('L', 'C', or 'R'; default is 'L').
 '''
-pixoo.draw_text('Hello there..', (0, 0), (0, 255, 0))
-pixoo.draw_text('GENERAL KENOBI', (0, 6), (255, 0, 0))
+pixoo.draw_text('Hello there..', (0, 0), (0, 255, 0), 64, Font.FONT_TOM_THUMB, 'L')
+pixoo.draw_text('GENERAL KENOBI', (0, 6), (255, 0, 0), 64, Font.FONT_TOM_THUMB, 'L')
 # or
-pixoo.draw_text_at_location_rgb('Neat', 0, 6, 255, 255, 0)
+pixoo.draw_text_at_location_rgb('Neat', 0, 6, 255, 255, 0, 64, Font.FONT_TOM_THUMB, 'L')
 
 '''
 Load and add an image to the buffer.
@@ -83,9 +81,16 @@ pixoo.draw_line((10, 12), (32, 54), (90, 12, 255))
 pixoo.draw_line_from_start_to_stop_rgb(10, 12, 32, 54, 90, 12, 255)
 
 '''
-The push methods pushes the buffer to the screen, needs to be called after you're done with all drawing-type methods
+The save_frame method saves the current buffer to the frame of the GIF and allows you to modify the buffer for the next frame in the GIF.
 '''
-pixoo.push()
+pixoo.save_frame()
+
+'''
+The push methods saves the current frame and pushes the buffer to the screen, needs to be called after you're done with all drawing-type methods
+This method accepts one parameter: the speed parameter which indicates the time (in ms) to display each frame in the animation. Default is 500 ms.
+For TimeGate users, this method accepts another parameter: the lcd_index parameter that determines which one of the five lcds to send the item to (optional; default is 0; must be between 0 and 4)
+'''
+pixoo.push(500)
 
 # The following are all 'device' methods.
 '''
@@ -142,8 +147,42 @@ The seventh argument is the movement speed of the text in case it doesn't fit th
 The eight and final argument is the movement direction of the text (optional, default TextScrollDirection.LEFT)
     **NOTE:** Currently TextScrollDirection.RIGHT seems broken on the display
 
+This method will return an error if done to the Pixoo 16 or the original Pixoo device as they do not support this functionality.
+
 NOTE: Currently this is **not** a drawing method, so it'll add the text over whatever is already on screen
 '''
 # Send text after pushing all your other data, because it'll otherwise be overwritten if it's not animated
 pixoo.send_text('Hello there', (0, 0), (10, 255, 0), 1, 6)
 pixoo.send_text('GENERAL KENOBI', (0, 15), (255, 0, 0), 2, 6)
+
+'''
+Add a text item to the item buffer. Unlike send_text, this method is suited for items that update periodically such as the time, date, weather, and temperature. 
+First argument is the text string (optional, default is None)
+Second argument is the position to place the item (optional; default is (0, 0))
+Third argument is the color of the text (optional; default is (255, 255, 255))
+Fourth argument is the text identifier. Use this to update existing items (optional; default is 1; must be between 0 and 40 inclusive)
+Fifth argument is the item type. Use this to set whether the item should display minutes, seconds, year, etc. (optional; default is 22 which indicates that it is a text item; must be between 1 and 23)
+Sixth argument is the scroll direction of the text (optional; default TextScrollDirection.LEFT)
+Seventh argument is the font identifier. Unlike send_text, add_item seems to support a lot more fonts. Refer to the font dictionary for more information (optional; default is 2).
+Eighth argument is the width of the textbox (optional; default is 64)
+Ninth argument is the height of the textbox (optional; default is 16)
+Tenth argument is the speed of the scrolling text in case the string overflows (optional; default is 100)
+Eleventh argument is how often the text string should update in seconds (optional; default is 0 which indicates that the item should use default settings)
+Twelfth argument is the alignment of the text within the text box (optional; default is 'L'; must be 'L', 'C', or 'R')
+'''
+# Add a text item to the buffer that displays the minutes
+pixoo.add_item(None, (0, 0), (255, 255, 255), 3, 1, TextScrollDirection.LEFT, 2, 64, 16, 100, None, 'L')
+
+'''
+Push the items in the item buffer to the display. The buffer will be cleared after this method is called.
+For TimeGate users, this method accepts one parameter: the lcd_index parameter that determines which one of the five lcds to send the item to (optional; default is 0; must be between 0 and 4)
+
+This method will return an error if done to the Pixoo 16 or the original Pixoo device as they do not support this functionality.
+NOTE: Currently this is **not** a drawing method, so it'll add the text over whatever is already on screen
+'''
+pixoo.send_items()
+
+'''
+Clear all text and text items that were created using the send_text method or the send_items method.
+'''
+pixoo.clear_text()
