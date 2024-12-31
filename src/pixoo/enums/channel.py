@@ -6,3 +6,4 @@ class Channel(IntEnum):
     CLOUD = 1
     VISUALIZER = 2
     CUSTOM = 3
+    BLANK = 4

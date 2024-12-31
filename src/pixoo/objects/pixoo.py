@@ -8,6 +8,7 @@ from .simulator import Simulator
 from .. import Palette, SimulatorConfiguration, ImageResampleMode, TextScrollDirection
 from ..utilities import minimum_amount_of_steps, round_location, lerp_location, clamp_color, rgb_to_hex_color, clamp
 from ..constants.font import Font
+from ..enums.channel import Channel
 
 class Pixoo:
     __buffer = []
@@ -25,8 +26,8 @@ class Pixoo:
             'Invalid screen size in pixels given. ' \
             'Valid options are 16, 32, and 64'
 
-        assert model in ["PIXOO", "PIXOO16", "PIXOO64", "TIMEGATE"], \
-            'Invalid model. Valid options are PIXOO, PIXOO16, PIXOO64, and TIMEGATE.' \
+        assert model in ["PIXOO16", "PIXOO64", "TIMEGATE"], \
+            'Invalid model. Valid options are PIXOO16, PIXOO64, and TIMEGATE.' \
             'If this is a new model, please contact the developer.'
 
         self.model = model
@@ -428,7 +429,7 @@ class Pixoo:
         if self.simulated:
             return
         
-        if self.model == "PIXOO" or self.model == "PIXOO16":
+        if self.model == "PIXOO16":
             if self.debug:
                 print(f'[x] Command not supported for {self.model}')
             raise Exception(f"{self.model} does not currently support this feature.")
@@ -733,6 +734,10 @@ class Pixoo:
         screen_num = clamp(screen_num, 0, 4)
         lcd_array = [0, 0, 0, 0, 0]
         lcd_array[screen_num] = 1
+
+        # PIXOO16 - The sending will not work unless the channel is changed beforehand
+        if self.model == "PIXOO16":
+            self.set_channel(Channel.BLANK)
 
         # Encode the buffer to base64 encoding
         for k,v in enumerate(self.__frames):
