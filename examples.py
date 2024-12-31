@@ -5,7 +5,7 @@ Create a connection to a Pixoo
 
 First argument is its IP address (required)
 The second argument is the display size (optional, default 64)
-The third argument is the model name for the display (optional, default "PIXOO64"). It currently supports four models ('PIXOO64', 'PIXOO', 'PIXOO16', and 'TIMEGATE').
+The third argument is the model name for the display (optional, default "PIXOO64"). It currently supports three models ('PIXOO64', 'PIXOO16', and 'TIMEGATE').
 The fourth argument is the 'debug mode' (optional, default False), which enables logging of important actions
 '''
 pixoo = Pixoo('192.168.50.214', 64, "PIXOO64", True)
@@ -147,7 +147,7 @@ The seventh argument is the movement speed of the text in case it doesn't fit th
 The eight and final argument is the movement direction of the text (optional, default TextScrollDirection.LEFT)
     **NOTE:** Currently TextScrollDirection.RIGHT seems broken on the display
 
-This method will return an error if done to the Pixoo 16 or the original Pixoo device as they do not support this functionality.
+This method will return an error if done to the Pixoo 16 as it does not support this functionality.
 
 NOTE: Currently this is **not** a drawing method, so it'll add the text over whatever is already on screen
 '''
@@ -177,7 +177,7 @@ pixoo.add_item(None, (0, 0), (255, 255, 255), 3, 1, TextScrollDirection.LEFT, 2,
 Push the items in the item buffer to the display. The buffer will be cleared after this method is called.
 For TimeGate users, this method accepts one parameter: the lcd_index parameter that determines which one of the five lcds to send the item to (optional; default is 0; must be between 0 and 4)
 
-This method will return an error if done to the Pixoo 16 or the original Pixoo device as they do not support this functionality.
+This method will return an error if done to the Pixoo 16 as it does not support this functionality.
 NOTE: Currently this is **not** a drawing method, so it'll add the text over whatever is already on screen
 '''
 pixoo.send_items()
