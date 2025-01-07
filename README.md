@@ -2,7 +2,9 @@
 
 # Pixoo_Next
 
-A library to easily communicate with the Divoom Pixoo64, Pixoo16, and Time Gate (and hopefully soon more screens that support Wi-Fi) based on the work of [SomethingWithComputers](https://github.com/SomethingWithComputers/pixoo). All credit should go to them.
+A library to easily communicate with the Divoom Pixoo64, Pixoo16, and Time Gate (and hopefully soon more screens that support Wi-Fi).
+
+This project is a fork of pixoo by [SomethingWithComputers](https://github.com/SomethingWithComputers/pixoo), released under the CC BY-NC-SA 4.0 license. All modifications and additions made in this repository are my own.
 
 An non-trivial example, with re-connecting and API-calls can be found in `examples/power-usage`.
 In this example I read the current kWh from my P1-meter and display the current power usage of my house in a neat little
