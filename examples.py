@@ -1,4 +1,4 @@
-from pixoo import Channel, ImageResampleMode, Pixoo, Font
+from pixoo import Channel, ImageResampleMode, Pixoo, Font, ItemType
 
 '''
 Create a connection to a Pixoo
@@ -82,11 +82,17 @@ pixoo.draw_line_from_start_to_stop_rgb(10, 12, 32, 54, 90, 12, 255)
 
 '''
 The save_frame method saves the current buffer to the frame of the GIF and allows you to modify the buffer for the next frame in the GIF.
+This method supports one parameter which is the index of the frame (0 is first).
 '''
 pixoo.save_frame()
 
 '''
-The push methods saves the current frame and pushes the buffer to the screen, needs to be called after you're done with all drawing-type methods
+The clear_frames method clears all frames from the buffer.
+'''
+#pixoo.clear_frames()
+
+'''
+The push method pushes the buffer to the screen (also saves the current frame if there are currently none in the buffer), needs to be called after you're done with all drawing-type methods
 This method accepts one parameter: the speed parameter which indicates the time (in ms) to display each frame in the animation. Default is 500 ms.
 For TimeGate users, this method accepts another parameter: the lcd_index parameter that determines which one of the five lcds to send the item to (optional; default is 0 which is the far left screen; must be between 0 and 4)
 '''
@@ -171,7 +177,7 @@ Eleventh argument is how often the text string should update in seconds (optiona
 Twelfth argument is the alignment of the text within the text box (optional; default is 'L'; must be 'L', 'C', or 'R')
 '''
 # Add a text item to the buffer that displays the minutes
-pixoo.add_item(None, (0, 0), (255, 255, 255), 3, 1, TextScrollDirection.LEFT, 2, 64, 16, 100, None, 'L')
+pixoo.add_item(None, (0, 0), (255, 255, 255), 3, ItemType.MINUTES, TextScrollDirection.LEFT, 2, 64, 16, 100, None, 'L')
 
 '''
 Push the items in the item buffer to the display. The buffer will be cleared after this method is called.
@@ -186,3 +192,33 @@ pixoo.send_items()
 Clear all text and text items that were created using the send_text method or the send_items method.
 '''
 pixoo.clear_text()
+
+
+'''
+DISPLAY TYPES
+
+1 - Seconds (SS)
+2 - Minutes (MM)
+3 - Hour (HH)
+4 - AM/PM
+5 - HH:MM (12-hr)
+6 - HH:MM:SS (12-hr)
+
+7 - Year (YYYY)
+8 - Day (DD)
+9 - Month (MM)
+10 - MM-YYYY
+11 - MMM-DD
+12 - DD-MMM-YYYY
+13 - Weekday (Two letters; e.g. Su/Mo/Tu/We/Th/Fr/Sa)
+14 - Weekday (Three letters; eg. Sun/Mon/Tue/Wed/Thu/Fri/Sat)
+15 - Weekday (Full letters)
+16 - Month (MMM)
+17 - Temperature
+18 - High Temperature
+19 - Low Temperature
+20 - Weather forecast
+21 - Noise value
+22 - Text string
+23 - URL request string. The HTTP reponse must be a JSON encode with a "DispData" string.
+'''

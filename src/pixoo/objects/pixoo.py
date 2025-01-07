@@ -9,6 +9,7 @@ from .. import Palette, SimulatorConfiguration, ImageResampleMode, TextScrollDir
 from ..utilities import minimum_amount_of_steps, round_location, lerp_location, clamp_color, rgb_to_hex_color, clamp
 from ..constants.font import Font
 from ..enums.channel import Channel
+from ..enums.itemtype import ItemType
 
 class Pixoo:
     __buffer = []
@@ -26,8 +27,8 @@ class Pixoo:
             'Invalid screen size in pixels given. ' \
             'Valid options are 16, 32, and 64'
 
-        assert model in ["PIXOO16", "PIXOO64", "TIMEGATE"], \
-            'Invalid model. Valid options are PIXOO16, PIXOO64, and TIMEGATE.' \
+        assert model in ["PIXOO16", "PIXOO64", "TIMESGATE"], \
+            'Invalid model. Valid options are PIXOO16, PIXOO64, and TIMESGATE.' \
             'If this is a new model, please contact the developer.'
 
         self.model = model
@@ -408,8 +409,14 @@ class Pixoo:
     def push(self, speed=500, screen_num=0):
         self.__send_buffer(speed, screen_num)
 
-    def save_frame(self):
-        self.__frames.append(self.__buffer)
+    def save_frame(self, index=None):
+        if index is None:
+            self.__frames.append(self.__buffer)
+        else:
+            self.__frames[index] = self.__buffer
+        
+    def clear_frames(self):
+        self.__frames.clear()
 
     def reboot(self):
         response = requests.post(self.__url, json.dumps({
@@ -475,7 +482,7 @@ class Pixoo:
         if data['error_code'] != 0:
             self.__error(data)
 
-    def add_item(self, text=None, xy=(0, 0), color=Palette.WHITE, text_id=1, type=22, direction=TextScrollDirection.LEFT, font=2, width=64, height=16, speed=100, update_time=None, align='L'):
+    def add_item(self, text=None, xy=(0, 0), color=Palette.WHITE, text_id=1, type=ItemType.TEXT, direction=TextScrollDirection.LEFT, font=2, width=64, height=16, speed=100, update_time=None, align='L'):
         item_dict = {
             "TextId": text_id,
             "type": type,
@@ -503,7 +510,7 @@ class Pixoo:
         if self.simulated:
             return
         
-        assert self.model in ["PIXOO64", "TIMEGATE"], \
+        assert self.model in ["PIXOO64", "TIMESGATE"], \
             'This model does not support this function.'
 
         lcd_index = clamp(lcd_index, 0, 4)
@@ -708,8 +715,9 @@ class Pixoo:
 
     def __send_buffer(self, speed=500, screen_num=0):
 
-        # Save frame first
-        self.save_frame()
+        # Save frame first if there is nothing in frame buffer
+        if not self.__frames:
+            self.save_frame()
 
         # Add to the internal counter
         self.__counter = self.__counter + 1
@@ -730,7 +738,7 @@ class Pixoo:
             self.__buffers_send = self.__buffers_send + 1
             return
 
-        # TIMEGATE - Convert the provided screen_num into an LcdArray
+        # TIMES GATE - Convert the provided screen_num into an LcdArray
         screen_num = clamp(screen_num, 0, 4)
         lcd_array = [0, 0, 0, 0, 0]
         lcd_array[screen_num] = 1
@@ -759,7 +767,6 @@ class Pixoo:
 
                 if self.debug:
                     print(f'[.] Pushed {self.__buffers_send} buffers')
-        self.__frames.clear()
 
     def __reset_counter(self):
         if self.debug:
