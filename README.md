@@ -2,9 +2,7 @@
 
 # Pixoo_Next
 
-A library to easily communicate with the Divoom Pixoo 64, Pixoo 16, and Time Gate (and hopefully soon more screens that support Wi-Fi).
-
-This project is a fork of pixoo by [SomethingWithComputers](https://github.com/SomethingWithComputers/pixoo), released under the CC BY-NC-SA 4.0 license. All modifications and additions made in this repository are my own.
+**pixoo-next** is an enhanced derivative of the original [pixoo library](https://github.com/SomethingWithComputers/pixoo) by [SomethingWithComputers](https://github.com/SomethingWithComputers/), released under the CC BY-NC-SA 4.0 License. It adds support for the recently released Divoom Pixoo 16 and Divoom Times Gate models in addition to the Divoom Pixoo 64 display supported by the original repository.
 
 An non-trivial example, with re-connecting and API-calls can be found in `examples/power-usage`.
 In this example I read the current kWh from my P1-meter and display the current power usage of my house in a neat little
@@ -91,11 +89,7 @@ set to 4 it'll look like this on MacOS:
 
 ## Installation
 
-You can install the library as a package via pip
-
-```shell
-pip install pixoo
-```
+You can install the library by cloning this repository or downloading the ZIP.
 
 Alternatively, you can install the pixoo package as developer locally with next command running from cloned folder:
 
@@ -121,10 +115,10 @@ brew install python-tk
 
 ## Getting started
 
-Create an interface with your device as such (of course use your own local IP-address):
+Create an interface with your device as such (of course use your own local IP-address). You must also specify the model name ("PIXOO64", "PIXOO16", or "TIMESGATE"; default is "PIXOO64") in the constructor.
 
 ```python
-pixoo = Pixoo('192.168.1.137')
+pixoo = Pixoo('192.168.1.137', model="PIXOO64")
 ```
 
 For now, the easiest way to learn how to use this library is to check the `examples.py`, and the example directory for a
@@ -165,13 +159,13 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
 Special thanks goes to [gickowtf](https://github.com/gickowtf/pixoo) who added the GICKO alternative font and also contributed flexible spacing to display wider and narrower letters so that they do not necessarily have to be three pixels wide.
 
 ### Tom Thumb font
-Special thanks goes to Brian Swetland and Robey Pointer for making a tiny 3x5 font that has high readability for uppercase and lowercase letters despite its scale. This font is released under the CC0 license.
+Special thanks goes to Brian Swetland and Robey Pointer for making a tiny 3x5 monospaced font that has high readability for uppercase and lowercase letters despite its scale. This font is released under the CC0 license.
 
 ### Munro font
-Special thanks to Ten by Twenty for this font. It is essentially a slightly larger version of the Tom Thumb font that is available in regular and narrow styles. This font is used under the SIL Open Font License v1.10.
+Special thanks to Ten by Twenty for this font. It is essentially a slightly larger version of the Tom Thumb font (9 pixels high and variable advance) that is available in regular and narrow styles. This font is used under the SIL Open Font License v1.10.
 
 ### Tiny font
-Directly inspired by the font set used by [lhti0](https://www.reddit.com/r/typography/comments/18j7eyt/heres_my_attempt_at_creating_the_smallest/) on Reddit with some minor tweaks on some characters. This character set is good for displaying tiny characters (hence the name) and has variable advance.
+Directly inspired by the font set created by [lhti0](https://www.reddit.com/r/typography/comments/18j7eyt/heres_my_attempt_at_creating_the_smallest/) on Reddit with some minor tweaks on some characters. This character set is good for displaying tiny characters (hence the name) and has variable advance.
 
 ### 4-by-6 font
 Directly inspired by the 5x8 font by [Markus Kuhn](http://www.cl.cam.ac.uk/~mgk25/) with variable advance.
@@ -202,6 +196,10 @@ Unfortunately, the Divoom Pixoo 64 doesn't seem quite ready for prime time- *yet
 that can cause issues, basically meaning that parts of the previous image are still displayed even though a newer image
 has been pushed to the display. I'm sure this will be fixed in the future though, the dev team seems to be working hard!
 
+### Pixoo 16 shows blank screen for a short time when frame is pushed
+
+This seems to be an issue with the Divoom Pixoo 16 as it is unable to display the pushed frame when the previous frame was already pushed without changing the display to a different channel afterward. The blank screen that is visible for a moment (this blank screen is a channel in its own) is an intentional addition to fix this problem. 
+
 ### After updating the screen +/- 300 times the display stops responding
 
 This seems to be an internal bug with the current firmware. I'll update the code once a better way to push a buffer to
@@ -212,6 +210,8 @@ the screen becomes available.
 .. and some other issues. Seems like for now, text can only really be scrolling left with most fonts. This will likely (
 hopefully?) be fixed by the dev team in the future.
 
+
+## License
 This work is licensed under a
 [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-nc-sa].
 
