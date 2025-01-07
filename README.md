@@ -2,7 +2,7 @@
 
 # Pixoo_Next
 
-A library to easily communicate with the Divoom Pixoo64, Pixoo16, and Time Gate (and hopefully soon more screens that support Wi-Fi).
+A library to easily communicate with the Divoom Pixoo 64, Pixoo 16, and Time Gate (and hopefully soon more screens that support Wi-Fi).
 
 This project is a fork of pixoo by [SomethingWithComputers](https://github.com/SomethingWithComputers/pixoo), released under the CC BY-NC-SA 4.0 license. All modifications and additions made in this repository are my own.
 
@@ -72,7 +72,7 @@ I've included a simple "simulator" that can render the buffer to a GUI so it's e
 to the device.
 
 It's in a very early stage, but it supports all methods that start with `draw_` and can be "pushed" to the GUI, just
-the way you'd use it normally.
+the way you'd use it normally. For now, this simulator only supports static frames and a single loop of a series of frames.
 
 **NOTE:** When enabling and using the simulator, the actual connection to the device will be completely ignored. So
 don't expect to see anything on your device when simulating.
@@ -165,7 +165,16 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
 Special thanks goes to [gickowtf](https://github.com/gickowtf/pixoo) who added the GICKO alternative font and also contributed flexible spacing to display wider and narrower letters so that they do not necessarily have to be three pixels wide.
 
 ### Tom Thumb font
-Special thanks goes to Brian Swetland and Robey Pointer for making a tiny 3x5 font that has high readability despite its scale. This font is used under the CC0 license.
+Special thanks goes to Brian Swetland and Robey Pointer for making a tiny 3x5 font that has high readability for uppercase and lowercase letters despite its scale. This font is released under the CC0 license.
+
+### Munro font
+Special thanks to Ten by Twenty for this font. It is essentially a slightly larger version of the Tom Thumb font that is available in regular and narrow styles. This font is used under the SIL Open Font License v1.10.
+
+### Tiny font
+Directly inspired by the font set used by [lhti0](https://www.reddit.com/r/typography/comments/18j7eyt/heres_my_attempt_at_creating_the_smallest/) on Reddit with some minor tweaks on some characters. This character set is good for displaying tiny characters (hence the name) and has variable advance.
+
+### 4-by-6 font
+Directly inspired by the 5x8 font by [Markus Kuhn](http://www.cl.cam.ac.uk/~mgk25/) with variable advance.
 
 ## Known bugs
 
