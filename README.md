@@ -198,7 +198,7 @@ has been pushed to the display. I'm sure this will be fixed in the future though
 
 ### Pixoo 16 shows blank screen for a short time when frame is pushed
 
-This seems to be an issue with the Divoom Pixoo 16 as it is unable to display the pushed frame when the previous frame was already pushed without changing the display to a different channel afterward. The blank screen that is visible for a moment (this blank screen is a channel in its own) is an intentional addition to fix this problem. 
+This seems to be an issue with the Divoom Pixoo 16 as it is unable to display the pushed frame when the previous frame was already pushed without changing the display to a different channel beforehand. The blank screen that is visible for a moment (this blank screen is a channel in its own) is an intentional addition to fix this problem. 
 
 ### After updating the screen +/- 300 times the display stops responding
 
