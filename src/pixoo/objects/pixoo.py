@@ -10,6 +10,7 @@ from ..utilities import minimum_amount_of_steps, round_location, lerp_location, 
 from ..constants.font import Font
 from ..enums.channel import Channel
 from ..enums.itemtype import ItemType
+from ..enums.itemfont import ItemFont
 
 class Pixoo:
     __buffer = []
