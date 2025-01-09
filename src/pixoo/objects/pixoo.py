@@ -407,8 +407,8 @@ class Pixoo:
         if data['error_code'] != 0:
             self.__error(data)
 
-    def push(self, speed=500, screen_num=0):
-        self.__send_buffer(speed, screen_num)
+    def push(self, speed=500, lcd_index=0):
+        self.__send_buffer(speed, lcd_index)
 
     def save_frame(self, index=None):
         if index is None:
