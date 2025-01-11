@@ -12,6 +12,22 @@ graph.
 
 _Tested on a Pixoo 64, with Python 3.12 on MacOS Sonoma._
 
+## New features
+
+### Added support for Divoom Pixoo 16 and Divoom Times Gate
+
+The repository has now been optimized so that it works with these two recently released models.
+
+The Pixoo 16 is a 16x16 version of the Divoom Pixoo 64. It lacks some API features such as adding text elements (you can only draw them using the draw_text method). As a result, using send_text or send_items to this model will result in an error. In addition, push method will not work if the previous frame has already been pushed without switching to a different channel (see the "Known bugs" section below).
+
+The Times Gate uses a series of five 128x128 matrices. It basically supports all API calls for the Pixoo 64. To control which screen to push the drawn frame, we have added an additional lcd_index parameter to the push, send_text, and send_items parameter that accepts an integer between 0 and 4 that corresponds to which matrix to update (0 being the leftmost screen and 4 being the rightmost screen; default is 0).
+
+### The new save_frame method
+
+With this method, you can create custom animated drawings. After you are done drawing a frame, you can save it by calling save_frame() and move on to drawing the next frame. This gets stored in a buffer and can be modified by specifying the index parameter inside of the save_frame method (0 corresponds to the first frame of the animation). When you are ready to display your entire animation, call the push method.
+
+The push method also supports one additional parameter called 'speed'. This represents the number of ms to display each frame in the animation until it moves to the next frame. You can also call push directly without using the save_frame method if you plan on making static drawings.
+
 ## The all new ✨REST-interface✨
 
 It's pretty much fully functional now.
