@@ -28,6 +28,17 @@ With this method, you can create custom animated drawings. After you are done dr
 
 The push method also supports one additional parameter called 'speed'. This represents the number of ms to display each frame in the animation until it moves to the next frame. You can also call push directly without using the save_frame method if you plan on making static drawings.
 
+### Dynamic text elements
+
+You can now add automatically updating text elements (such as the time, date, and weather information) into the Pixoo 64 and Times Gate models using the add_item and send_items methods. Calling the add_item method will add a text item to the buffer. To display the text, call send_items. These methods also support more than 200 system fonts that Divoom uses for their clock faces.
+
+We've also added an ItemType enum to make it easier for users to specify the type of text to be displayed.
+
+### Additional draw_text parameters
+
+The draw_text method now supports additional features. First, it now has support for fonts with varying advances for their characters (thanks to [gickowtf](https://github.com/gickowtf/pixoo) for the idea). Second, it now has two new parameters: The width parameter that specifies the width (in pixels) of the text box (default is 0 which indicates infinite width) and the align parameter that specifies the alignment of the text in relation to the text box.
+
+
 ## The all new ✨REST-interface✨
 
 It's pretty much fully functional now.
