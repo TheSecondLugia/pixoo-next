@@ -1,6 +1,6 @@
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 
-# Pixoo_Next
+# Pixoo-Next
 
 **pixoo-next** is an enhanced derivative of the original [pixoo library](https://github.com/SomethingWithComputers/pixoo) by [SomethingWithComputers](https://github.com/SomethingWithComputers/), released under the CC BY-NC-SA 4.0 License. It adds support for the recently released Divoom Pixoo 16 and Divoom Times Gate models in addition to the Divoom Pixoo 64 display supported by the original repository.
 
