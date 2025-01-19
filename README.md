@@ -152,6 +152,13 @@ Create an interface with your device as such (of course use your own local IP-ad
 pixoo = Pixoo('192.168.1.137', model="PIXOO64")
 ```
 
+To create a simple Hello World display, fill the background with black using the fill_rgb method, draw the "Hello World" text using the draw_text method, and then push the content to the diplay with the push method, like so:
+```python
+pixoo.fill_rgb(0, 0, 0)
+pixoo.draw_text("Hello World")
+pixoo.push()
+```
+
 For now, the easiest way to learn how to use this library is to check the `examples.py`, and the example directory for a
 neat project. I'll be adding examples to this page over time as well, once the project matures a bit more.
 
