@@ -18,7 +18,7 @@ _Tested on a Pixoo 64, with Python 3.12 on MacOS Sonoma._
 
 The repository has now been optimized so that it works with these two recently released models.
 
-The Pixoo 16 is a 16x16 version of the Divoom Pixoo 64. It lacks some API features such as adding text elements (you can only draw them using the draw_text method). As a result, using send_text or send_items to this model will result in an error. In addition, push method will not work if the previous frame has already been pushed without switching to a different channel (see the "Known bugs" section below).
+The Pixoo 16 is a 16x16 version of the Divoom Pixoo 64. It lacks some API features such as adding text elements (you can only draw them using the draw_text method). As a result, using send_text or send_items to this model will result in an error. In addition, pushing a frame to the display will result in the screen going blank for a few moments. This is because pushing a frame does not work when a frame was previously pushed without switching to a different channel (see the "Known bugs" section below).
 
 The Times Gate uses a series of five 128x128 matrices. It basically supports all API calls for the Pixoo 64. To control which screen to push the drawn frame, we have added an additional lcd_index parameter to the push, send_text, and send_items parameter that accepts an integer between 0 and 4 that corresponds to which matrix to update (0 being the leftmost screen and 4 being the rightmost screen; default is 0).
 
