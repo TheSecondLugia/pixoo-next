@@ -4,14 +4,6 @@
 
 **pixoo-next** is an enhanced derivative of the original [pixoo library](https://github.com/SomethingWithComputers/pixoo) by [SomethingWithComputers](https://github.com/SomethingWithComputers/), released under the CC BY-NC-SA 4.0 License. It adds support for the recently released Divoom Pixoo 16 and Divoom Times Gate models in addition to the Divoom Pixoo 64 display supported by the original repository.
 
-An non-trivial example, with re-connecting and API-calls can be found in `examples/power-usage`.
-In this example I read the current kWh from my P1-meter and display the current power usage of my house in a neat little
-graph.
-
-![Simulator buffer simulator](./images/screenshot-2.png)
-
-_Tested on a Pixoo 64, with Python 3.12 on MacOS Sonoma._
-
 ## New features
 
 ### Added support for Divoom Pixoo 16 and Divoom Times Gate
