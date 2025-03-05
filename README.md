@@ -26,7 +26,7 @@ To start over, call the clear_frames method.
 
 You can now add automatically updating text elements (such as the time, date, and weather information) into the Pixoo 64 and Times Gate models using the add_item and send_items methods. Calling the add_item method will add a text item to the buffer. To display the text, call send_items. These methods also support more than 200 system fonts that Divoom uses for their clock faces.
 
-We've also added an ItemType enum to make it easier for users to specify the type of text to be displayed.
+We've also added an ItemType enum to make it easier for users to specify the type of text to be displayed, as well as the ItemFont enum to make it easier to specify the font to use for the text. Most of the fonts only support numbers, though.
 
 ### Additional draw_text parameters
 
