@@ -151,6 +151,11 @@ pixoo.draw_text("Hello World")
 pixoo.push()
 ```
 
+To clear the buffer for a new animation, call the `clear_frames` method.
+```python
+pixoo.clear_frames()
+```
+
 For now, the easiest way to learn how to use this library is to check the `examples.py`, and the example directory for a
 neat project. I'll be adding examples to this page over time as well, once the project matures a bit more.
 
