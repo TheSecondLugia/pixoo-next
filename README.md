@@ -14,6 +14,8 @@ The **Pixoo 16** is a 16x16 version of the Divoom Pixoo 64. It lacks some API fe
 
 The **Times Gate** uses a series of five 128x128 matrices. It basically supports all API calls for the Pixoo 64. To control which screen to push the drawn frame, we have added an additional lcd_index parameter to the push, send_text, and send_items parameter that accepts an integer between 0 and 4 that corresponds to which matrix to update (0 being the leftmost screen and 4 being the rightmost screen; default is 0).
 
+There is still no support for the Pixoo-Max, Pixoo (the original) and Tiivoo-2 since they work only with Bluetooth and we don't have the APIs to allow communication with those devices.
+
 ### The new save_frame method
 
 With this method, you can create custom animated drawings. After you are done drawing a frame, you can save it by calling save_frame() and move on to drawing the next frame. This gets stored in a buffer and can be modified by specifying the index parameter inside of the save_frame method (0 corresponds to the first frame of the animation). When you are ready to display your entire animation, call the push method.
@@ -88,7 +90,7 @@ is coming, but I wanted to make the interface as easily accessible as possible f
 
 ## The Simulator
 
-.. Simulator might be a bit of a big word, but if you want to test your own drawing stuff,
+Simulator might be a bit of a big word, but if you want to test your own drawing stuff,
 I've included a simple "simulator" that can render the buffer to a GUI so it's easier to debug without having to connect
 to the device.
 
